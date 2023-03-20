@@ -1,14 +1,11 @@
 package com.xmzhou.util;
 
+import io.netty.util.internal.MathUtil;
 import io.netty.util.internal.StringUtil;
 
 import java.nio.ByteBuffer;
 
-import static io.netty.util.internal.MathUtil.isOutOfBounds;
-import static io.netty.util.internal.StringUtil.NEWLINE;
-
 public class ByteBufferUtil {
-
     private static final char[] BYTE2CHAR = new char[256];
     private static final char[] HEXDUMP_TABLE = new char[256 * 4];
     private static final String[] HEXPADDING = new String[16];
@@ -38,7 +35,7 @@ public class ByteBufferUtil {
         // Generate the lookup table for the start-offset header in each row (up to 64KiB).
         for (i = 0; i < HEXDUMP_ROWPREFIXES.length; i++) {
             StringBuilder buf = new StringBuilder(12);
-            buf.append(NEWLINE);
+            buf.append(StringUtil.NEWLINE);
             buf.append(Long.toHexString(i << 4 & 0xFFFFFFFFL | 0x100000000L));
             buf.setCharAt(buf.length() - 9, '|');
             buf.append('|');
@@ -98,7 +95,7 @@ public class ByteBufferUtil {
     }
 
     private static void appendPrettyHexDump(StringBuilder dump, ByteBuffer buf, int offset, int length) {
-        if (isOutOfBounds(offset, length, buf.capacity())) {
+        if (MathUtil.isOutOfBounds(offset, length, buf.capacity())) {
             throw new IndexOutOfBoundsException(
                     "expected: " + "0 <= offset(" + offset + ") <= offset + length(" + length
                             + ") <= " + "buf.capacity(" + buf.capacity() + ')');
@@ -108,8 +105,8 @@ public class ByteBufferUtil {
         }
         dump.append(
                 "         +-------------------------------------------------+" +
-                        NEWLINE + "         |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |" +
-                        NEWLINE + "+--------+-------------------------------------------------+----------------+");
+                        StringUtil.NEWLINE + "         |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |" +
+                        StringUtil.NEWLINE + "+--------+-------------------------------------------------+----------------+");
 
         final int startIndex = offset;
         final int fullRows = length >>> 4;
@@ -157,7 +154,7 @@ public class ByteBufferUtil {
             dump.append('|');
         }
 
-        dump.append(NEWLINE +
+        dump.append(StringUtil.NEWLINE +
                 "+--------+-------------------------------------------------+----------------+");
     }
 
@@ -165,7 +162,7 @@ public class ByteBufferUtil {
         if (row < HEXDUMP_ROWPREFIXES.length) {
             dump.append(HEXDUMP_ROWPREFIXES[row]);
         } else {
-            dump.append(NEWLINE);
+            dump.append(StringUtil.NEWLINE);
             dump.append(Long.toHexString(rowStartIndex & 0xFFFFFFFFL | 0x100000000L));
             dump.setCharAt(dump.length() - 9, '|');
             dump.append('|');
@@ -175,5 +172,4 @@ public class ByteBufferUtil {
     public static short getUnsignedByte(ByteBuffer buffer, int index) {
         return (short) (buffer.get(index) & 0xFF);
     }
-
 }
